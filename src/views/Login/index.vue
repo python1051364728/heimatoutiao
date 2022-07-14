@@ -1,6 +1,10 @@
 <template>
   <div class="login-container">
-    <van-nav-bar title="登录" />
+    <van-nav-bar title="登录" @click-left="$router.push('/my')">
+      <template #left>
+        <van-icon class="cha" name="cross" />
+      </template>
+    </van-nav-bar>
     <!-- 表单 -->
     <van-form @submit="onSubmit" ref="form">
       <van-field
@@ -107,13 +111,17 @@ export default {
 
       try {
         const res = await login(this.user);
-        // console.log(res);
+        console.log(res);
         Toast.success("登录成功");
+        this.$store.commit("setUser", res.data.data);
+        this.$router.push("/");
       } catch (e) {
+        console.log(e);
         Toast.fail(e?.response?.data?.message || "登录失败");
       }
     },
 
+// 发送验证码
     async sendSmsCode() {
       try {
         await this.$refs.form.validate["mobile"];
@@ -144,6 +152,10 @@ export default {
         this.isDisabled = false;
       }
     },
+// 返回我的
+    chahao() {
+      this.$router.push("/my");
+    },
   },
 };
 </script>
@@ -161,5 +173,8 @@ export default {
     font-size: 22px;
     color: #666;
   }
+}
+.cha {
+  color: #fff;
 }
 </style>
