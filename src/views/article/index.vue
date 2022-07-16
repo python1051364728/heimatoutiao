@@ -1,7 +1,12 @@
 <template>
   <div class="article-container">
     <!-- 导航栏 -->
-    <van-nav-bar @click-left="this.$router.push('/home')" class="page-nav-bar" left-arrow title="黑马头条"></van-nav-bar>
+    <van-nav-bar
+      @click-left="$router.push('/home')"
+      class="page-nav-bar"
+      left-arrow
+      title="黑马头条"
+    ></van-nav-bar>
     <!-- /导航栏 -->
 
     <div class="main-wrap">
@@ -46,7 +51,11 @@
         <van-divider>正文结束</van-divider>
 
         <!-- 评论组件 -->
-        <commentlist :source="article.art_id"></commentlist>
+        <commentlist
+          @reply-click="ReplyClick"
+          :list="commentlist"
+          :source="article.art_id"
+        ></commentlist>
         <!-- 评论组件 -->
       </div>
       <!-- /加载完成-文章详情 -->
@@ -94,13 +103,26 @@
     <!-- /底部区域 -->
     <!------------------------------------------  发布评论 ------------------------------------------------>
     <van-popup position="bottom" v-model="isPostShow">
-      <commentPost :target="article.art_id"></commentPost>
+      <commentPost
+        @post-success="postSuccess"
+        :target="article.art_id"
+      ></commentPost>
     </van-popup>
     <!------------------------------------------  /发布评论 ------------------------------------------------>
+    <!------------------------------------------ 评论回复 ------------------------------------------>
+    <van-popup v-model="isReplyShow" position="bottom" style="height: 100%">
+      <CommentReply
+        v-if="isReplyShow"
+        @close="isReplyShow = false"
+        :currentComment="currentComment"
+      ></CommentReply>
+    </van-popup>
+    <!------------------------------------------ /评论回复 ------------------------------------------>
   </div>
 </template>
 
 <script>
+import CommentReply from "./components/comment-reply";
 import commentPost from "@/views/article/components/comment-post.vue";
 import commentlist from "@/views/article/components/comment-list.vue";
 import goodJob from "@/views/article/components/good-job";
@@ -111,19 +133,34 @@ import "github-markdown-css";
 import { ImagePreview } from "vant";
 export default {
   name: "ArticleIndex",
-  components: { followUser, collectArticle, goodJob, commentlist, commentPost },
+  components: {
+    followUser,
+    collectArticle,
+    goodJob,
+    commentlist,
+    commentPost,
+    CommentReply,
+  },
   props: {
     articleId: {
       type: [Number, String],
       required: true,
     },
   },
+  provide() {
+    return {
+      articleId: this.articleId,
+    };
+  },
   data() {
     return {
+      isReplyShow: false,
+      commentlist: [],
       isPostShow: false,
       article: {},
       loading: false,
       isNotFound: false,
+      currentComment: {},
     };
   },
   computed: {},
@@ -133,6 +170,17 @@ export default {
   },
   mounted() {},
   methods: {
+    ReplyClick(comment) {
+      console.log(comment);
+      this.currentComment = comment;
+      this.isReplyShow = true;
+    },
+    postSuccess(data) {
+      console.log("弹窗关闭了");
+      console.log(data);
+      this.commentlist.unshift(data);
+      this.isPostShow = false;
+    },
     previewImg() {
       const imgs = this.$refs.content.querySelectorAll("img");
       const images = [];
