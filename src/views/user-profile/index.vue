@@ -40,7 +40,7 @@
     <van-popup v-model="show2" position="bottom" :style="{ height: '40%' }">
       <UpdateBirthday
         @close="show2 = false"
-        v-model="user.birthday"
+        v-model="userInfo.birthday"
       ></UpdateBirthday>
     </van-popup>
   </div>
@@ -48,7 +48,7 @@
 
 <script>
 import { getUserProfile } from "@/api/user";
-// import UpdateBirthday from "./components/updateBirthday.vue";
+import UpdateBirthday from "./components/updateBirthday.vue";
 import updataName from "./components/updataName.vue";
 import updataGender from "./components/updataGender.vue";
 export default {

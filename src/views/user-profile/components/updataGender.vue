@@ -7,7 +7,7 @@
       :default-index="value"
       @cancel="$emit('close')"
       @confirm="onConfirm"
-      @change="onPickerChange"
+      @change="onChange"
     />
   </div>
 </template>
@@ -18,7 +18,8 @@ export default {
   components: { updateUserProfile },
   props: {
     value: {
-      type: [String, Number],
+      type: Number,
+      required: true,
     },
   },
   data() {
@@ -28,16 +29,18 @@ export default {
   },
   methods: {
     async onConfirm(...[, index]) {
+      console.log(index);
       await updateUserProfile({
         gender: index,
       });
-      this.$emit("close");
+      // console.log(res);
       this.$emit("input", index);
+      this.$emit("close");
     },
     onChange() {
       this.$emit("close");
     },
-    onCancel() {},
+    onChange() {},
   },
 };
 </script>
